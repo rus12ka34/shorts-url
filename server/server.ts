@@ -1,4 +1,5 @@
 import express, { Request, response, Response } from "express";
+import { generateCode, setShortUrl, getOriginalUrl } from "./requests";
 import bodyParser from "body-parser";
 import cors from 'cors';
 
@@ -6,29 +7,40 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-  origin: 'http://localhost:4444', // или '*' для всех (НЕ для продакшена)
-  methods: ['GET', 'POST'],
-  credentials: true, // если отправляешь куки или auth-заголовки
+  origin: 'http://localhost:4444'
 }));
 
 app.use(express.json());
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello, TypeScript world!");
 });
 
-app.post("/shorten", (req: Request, res: Response) => {
-  console.log('req >> ', req);
+app.post("/shorten", async (req: Request, res: Response) => {
   const { originalUrl, expiresAt, alias } = req.body;
-  
-  console.log('originalUrl >> ', originalUrl);
-  console.log('expiresAt >> ', expiresAt);
-  console.log('alias >> ', alias);
 
-  res.send({ shortUrl: '/urlll' });
+  const code = generateCode();
+  try {
+    
+    await setShortUrl(originalUrl, code);
+  } catch (error) {
+    console.error('[shorten]: ', error);
+  }
+ 
+  res.send({ shortUrl: `http://localhost:3000/short/${code}` });
+});
+
+app.get("/short/:code", async (req: Request, res: Response) => {
+  const { code } = req.params;
+
+  let originalUrl = '';
+  try {
+    originalUrl = await getOriginalUrl(code);
+  } catch (error) {
+    console.error('[shorten]: ', error);
+  }
+
+  res.redirect(originalUrl);
 });
 
 app.listen(port, () => {

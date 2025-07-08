@@ -1,6 +1,5 @@
 import express, { Request, response, Response } from "express";
 import { generateCode, setShortUrl, getOriginalUrl } from "./requests";
-import bodyParser from "body-parser";
 import cors from 'cors';
 
 const app = express();

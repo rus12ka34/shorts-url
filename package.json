@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack",
     "start": "webpack serve --env mode=development port=4444",
-    "server": "nodemon --watch src -e ts --exec \"ts-node server/server.ts\"",
+    "server": "nodemon",
     "build:dev": "webpack --env mode=development",
     "build:prod": "webpack --env mode=production"
   },

@@ -5,7 +5,10 @@
   "ext": "ts",
   "exec": "ts-node server/server.ts",
   "ignore": [
-    "node_modules"
+    "node_modules",
+    "build",
+    "webpack.config.js",
+    "tsconfig.json"
   ],
   "delay": "500"
 }

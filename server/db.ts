@@ -1,25 +1,11 @@
-// import dotenv from 'dotenv';
 import { Pool } from 'pg';
 
-
-// dotenv.config();
-
-// PostgreSQL connection pool configuration using environment variables
-
-const config = {
-  DB_USER: 'postgres',
-  DB_HOST: '127.0.0.1',
-  DB_NAME: 'shortsurl',
-  DB_PASSWORD: '12g34rus',
-  DB_PORT: 5432,
-};
-
 const pool = new Pool({
-  user: config.DB_USER,
-  host: config.DB_HOST,
-  database: config.DB_NAME,
-  password: config.DB_PASSWORD,
-  port: config.DB_PORT || 5432,
+  user: process.env.DB_USER || 'postgres',
+  host: process.env.DB_HOST || '127.0.0.1',
+  database: process.env.DB_NAME || 'shortsurl',
+  password: process.env.DB_PASSWORD || '12g34rus',
+  port: parseInt(process.env.DB_PORT || '5432'),
 });
 
 async function verifyConnection(): Promise<void> {

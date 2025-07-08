@@ -3,10 +3,11 @@ import { generateCode, setShortUrl, getOriginalUrl } from "./requests";
 import cors from 'cors';
 
 const app = express();
-const port = 3000;
+const port = parseInt(process.env.PORT || '3000', 10);
 
 app.use(cors({
-  origin: 'http://localhost:4444'
+  origin: ['http://localhost:4444', 'http://0.0.0.0:4444', 'http://127.0.0.1:4444'],
+  credentials: true
 }));
 
 app.use(express.json());

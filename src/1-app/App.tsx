@@ -1,9 +1,17 @@
+import { Suspense } from 'react';
+import { NotFound } from '@/pages';
+import { Routes, Route } from 'react-router-dom';
+
 import { useState } from 'react';
+
 import './styles/index.scss';
+
 
 export const App = () => {
   const [shorted, setShorted] = useState('');
   const [originalUrl, setOriginalUrl] = useState('');
+  const [expiresAt, setExpiresAt] = useState(null);
+  const [alias, setAlias] = useState('');
 
   const shortingUrl = async () => {
     try {
@@ -14,8 +22,8 @@ export const App = () => {
         },
         body: JSON.stringify({
           originalUrl,
-          expiresAt: '',
-          alias: '',
+          expiresAt,
+          alias,
         })
       });
       const json = await response.json();
@@ -28,11 +36,20 @@ export const App = () => {
   
   return (
     <div className={'App'}>
-      <div className='container'>
-        <input value={originalUrl} onChange={(e) => setOriginalUrl(e.target.value)} />
-        <button onClick={shortingUrl}>Укоротить</button>
-        {shorted}
-      </div>
+      <Suspense fallback={'Загрузка...'}>
+          <Routes>
+            <Route path='/' element={
+              <div className='container'>
+                <input value={originalUrl} onChange={(e) => setOriginalUrl(e.target.value)} />
+                <input type='date' value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} />
+                <input value={alias} onChange={(e) => setAlias(e.target.value)} />
+                <button onClick={shortingUrl}>Укоротить</button>
+                {shorted}
+              </div>
+            } />
+            <Route path='/*' element={<NotFound />} />
+          </Routes>
+      </Suspense>
     </div>
   );
 };

@@ -1,51 +1,89 @@
 import pool from './db';
+import { generateCode } from './helpers';
 
-export async function getTesting(userId: number) {
-  const query = 'SELECT id FROM users LIMIT 1';
-  try {
-    const result = await pool.query(query);
-    return result.rows[0];
-  } catch (error) {
-    console.error('Error executing query:', error);
-    throw error;
-  }
-}
-
-export async function setShortUrl(originalUrl: string, code?: string) {
+export async function setShortUrl(originalUrl: string, alias?: string, expiresAt?: string) {
+  const code = generateCode();
+  const _alias = alias || code;
+  
   const query = `
-    INSERT INTO public.shortlink (targeturl, shortpath) 
-    VALUES ('${originalUrl}', '${code}');
+    INSERT INTO public.shortlink (targeturl, shortpath, expiresat) 
+    VALUES ('${originalUrl}', '${_alias}', '${expiresAt}');
   `;
 
   try {
     await pool.query(query);
+    return `http://localhost:3000/${_alias}`;
   } catch (error) {
-    console.error('[SHORTING]: ', error);
+    console.error('[setShortUrl]: ', error);
     throw error;
   }
 }
 
 export async function getOriginalUrl(code: string) {
   const query = `
-    SELECT targeturl FROM public.shortlink WHERE shortpath = '${code}';
+    SELECT id, targeturl, expiresat FROM public.shortlink WHERE shortpath = '${code}';
   `;
 
   try {
     const urls = await pool.query(query);
-    const { targeturl } = urls.rows[0];
-    return targeturl;
+    return urls.rows[0];
   } catch (error) {
-    console.error('[SHORTING]: ', error);
+    console.error('[getOriginalUrl]: ', error);
     throw error;
   }
 }
 
-export function generateCode(length: number = 6): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * chars.length);
-    result += chars[randomIndex];
+export async function getInfo(code: string) {
+  const query = `
+    SELECT targeturl, createdAt FROM public.shortlink WHERE shortpath = '${code}';
+  `;
+
+  try {
+    const urls = await pool.query(query);
+    return urls.rows[0];
+  } catch (error) {
+    console.error('[getInfo]: ', error);
+    throw error;
   }
-  return result;
+}
+
+export async function deleteOriginalUrl(code: string) {
+  const query = `
+    DELETE FROM public.shortlink WHERE shortpath = '${code}';
+  `;
+
+  try {
+    const urls = await pool.query(query);
+  } catch (error) {
+    console.error('[deleteOriginalUrl]: ', error);
+    throw error;
+  }
+}
+
+export async function setFollow(shortlinkid: number, ip: string) {
+  const query = `
+    INSERT INTO public.follow (shortlinkid, ip) 
+    VALUES ('${shortlinkid}', '${ip}');
+  `;
+
+  try {
+    await pool.query(query);
+  } catch (error) {
+    console.error('[setFollow]: ', error);
+    throw error;
+  }
+}
+
+export async function getAnalytics(shortlinkid: number) {
+  const query = `
+    SELECT createdat, ip FROM public.follow WHERE shortlinkid = '${shortlinkid}';
+  `;
+
+  try {
+    const urls = await pool.query(query);
+    return urls.rows;
+  } catch (error) {
+    console.error('[getAnalytics]: ', error);
+    throw error;
+  }
 }

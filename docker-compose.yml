@@ -2,8 +2,8 @@ services:
   app:
     build: .
     ports:
-      - "4444:4444"  # фронтенд (React)
-      - "3000:3000"  # бэкенд (Express)
+      - "4444:4444"
+      - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules

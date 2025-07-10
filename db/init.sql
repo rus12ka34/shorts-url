@@ -130,6 +130,16 @@ COPY public.follow (id, shortlinkid, createdat, ip) FROM stdin;
 4	22	2025-07-09 23:17:16.431574	::1
 5	22	2025-07-09 23:17:18.728153	::1
 6	22	2025-07-09 23:17:20.742445	::1
+7	23	2025-07-10 16:41:11.011191	::1
+8	23	2025-07-10 16:41:13.950644	::1
+9	23	2025-07-10 16:41:15.577521	::1
+10	23	2025-07-10 16:41:17.821086	::1
+11	24	2025-07-10 16:58:13.335658	::1
+12	24	2025-07-10 16:58:18.588482	::1
+13	25	2025-07-10 21:33:58.267314	::1
+14	26	2025-07-10 21:40:10.976415	::1
+15	27	2025-07-10 21:42:01.059518	::1
+16	26	2025-07-10 21:42:01.08437	::1
 \.
 
 
@@ -157,6 +167,11 @@ COPY public.shortlink (id, targeturl, shortpath, clickcount, createdat, expiresa
 19	https://www.google.com/search?q=%D1%87%D1%82%D0%BE+%D1%82%D0%B0%D0%BA%D0%BE+alias+%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8&oq=%D1%87%D1%82%D0%BE+%D1%82%D0%B0%D0%BA%D0%BE+alias+%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8+&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIJCAEQIRgKGKABMgkIAhAhGAoYoAHSAQg1NzM0ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8	ScGruI	0	2025-07-09 18:42:16.490646	2025-07-12 00:00:00+03
 21	https://chatgpt.com/c/686ebf08-a2f0-8002-a105-dc673b62f28b	ywFjCb	0	2025-07-09 22:53:51.367411	2025-07-12 00:00:00+03
 22	https://pomodoro-tracker.com/	x9okXX	0	2025-07-09 23:17:06.858041	2025-07-12 00:00:00+03
+23	https://pomodoro-tracker.com/	kpundj	0	2025-07-10 16:41:07.723677	2025-07-12 00:00:00+03
+24	http://localhost:4444/	infoiii	0	2025-07-10 16:58:10.498897	\N
+25	https://www.youtube.com/watch?v=EBcSoEQfdD8&ab_channel=ZubarevRewind	2Gyjm1	0	2025-07-10 21:33:55.391854	2025-07-12 00:00:00+03
+26	https://www.youtube.com/watch?v=EBcSoEQfdD8&ab_channel=ZubarevRewind	94d4KA	0	2025-07-10 21:40:08.378539	2025-07-11 00:00:00+03
+27	http://localhost:3000/94d4KA	Aud7pT	0	2025-07-10 21:41:58.724475	\N
 \.
 
 
@@ -164,14 +179,14 @@ COPY public.shortlink (id, targeturl, shortpath, clickcount, createdat, expiresa
 -- Name: follow_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.follow_id_seq', 6, true);
+SELECT pg_catalog.setval('public.follow_id_seq', 16, true);
 
 
 --
 -- Name: shortlink_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.shortlink_id_seq', 22, true);
+SELECT pg_catalog.setval('public.shortlink_id_seq', 27, true);
 
 
 --

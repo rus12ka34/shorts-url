@@ -3,7 +3,7 @@
     "src"
   ],
   "ext": "ts",
-  "exec": "ts-node server/server.ts",
+  "exec": "dotenv -e .env ts-node server/server.ts",
   "ignore": [
     "node_modules",
     "build",

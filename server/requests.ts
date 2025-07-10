@@ -1,96 +1,60 @@
 import pool from './db';
-import { generateCode, UNAVAILABLE_ALIAS } from './helpers';
+import { generateCode, UNAVAILABLE_ALIAS } from './config/helpers';
+import { ShortLink, Follow } from './config/types';
 
-export async function setShortUrl(originalUrl: string, alias?: string, expiresAt?: string) {
+const executeQuery = async <T>(query: string, values: any[] = [], errorPrefix: string): Promise<T[]> => {
+  try {
+    const result = await pool.query<T>(query, values);
+    return result.rows;
+  } catch (error) {
+    console.error(`[${errorPrefix}]: `, error);
+    throw error;
+  }
+}
+
+export const setShortUrl = async (originalUrl: string, alias?: string, expiresAt?: string): Promise<string> => {
   const code = generateCode();
   const _alias = alias || code;
 
   if (UNAVAILABLE_ALIAS.includes(_alias)) {
     throw new Error('[UNAVAILABLE_ALIAS]');
   }
-  
-  const query = expiresAt ? `
-    INSERT INTO public.shortlink (targeturl, shortpath, expiresat) 
-    VALUES ('${originalUrl}', '${_alias}', '${expiresAt}');
-  ` : `
-    INSERT INTO public.shortlink (targeturl, shortpath) 
-    VALUES ('${originalUrl}', '${_alias}');
-  `;
 
-  try {
-    await pool.query(query);
-    return `http://localhost:3000/${_alias}`;
-  } catch (error) {
-    console.error('[setShortUrl]: ', error);
-    throw error;
-  }
+  const query = expiresAt 
+    ? 'INSERT INTO public.shortlink (targeturl, shortpath, expiresat) VALUES ($1, $2, $3)'
+    : 'INSERT INTO public.shortlink (targeturl, shortpath) VALUES ($1, $2)';
+
+  const values = expiresAt 
+    ? [originalUrl, _alias, expiresAt]
+    : [originalUrl, _alias];
+
+  await executeQuery(query, values, 'setShortUrl');
+  return `http://localhost:3000/${_alias}`;
 }
 
-export async function getOriginalUrl(code: string) {
-  const query = `
-    SELECT id, targeturl, expiresat FROM public.shortlink WHERE shortpath = '${code}';
-  `;
-
-  try {
-    const urls = await pool.query(query);
-    return urls.rows[0];
-  } catch (error) {
-    console.error('[getOriginalUrl]: ', error);
-    throw error;
-  }
+export const getOriginalUrl = async (code: string): Promise<ShortLink | undefined> => {
+  const query = 'SELECT id, targeturl, expiresat FROM public.shortlink WHERE shortpath = $1';
+  const [result] = await executeQuery<ShortLink>(query, [code], 'getOriginalUrl');
+  return result;
 }
 
-export async function getInfo(code: string) {
-  const query = `
-    SELECT targeturl, createdAt FROM public.shortlink WHERE shortpath = '${code}';
-  `;
-
-  try {
-    const urls = await pool.query(query);
-    return urls.rows[0];
-  } catch (error) {
-    console.error('[getInfo]: ', error);
-    throw error;
-  }
+export const getInfo = async (code: string): Promise<ShortLink | undefined> => {
+  const query = 'SELECT targeturl, createdat FROM public.shortlink WHERE shortpath = $1';
+  const [result] = await executeQuery<ShortLink>(query, [code], 'getInfo');
+  return result;
 }
 
-export async function deleteOriginalUrl(code: string) {
-  const query = `
-    DELETE FROM public.shortlink WHERE shortpath = '${code}';
-  `;
-
-  try {
-    const urls = await pool.query(query);
-  } catch (error) {
-    console.error('[deleteOriginalUrl]: ', error);
-    throw error;
-  }
+export const deleteOriginalUrl = async (code: string): Promise<void> => {
+  const query = 'DELETE FROM public.shortlink WHERE shortpath = $1';
+  await executeQuery(query, [code], 'deleteOriginalUrl');
 }
 
-export async function setFollow(shortlinkid: number, ip: string) {
-  const query = `
-    INSERT INTO public.follow (shortlinkid, ip) 
-    VALUES ('${shortlinkid}', '${ip}');
-  `;
-
-  try {
-    await pool.query(query);
-  } catch (error) {
-    console.error('[setFollow]: ', error);
-    throw error;
-  }
+export const setFollow = async (shortlinkid: number, ip: string): Promise<void> => {
+  const query = 'INSERT INTO public.follow (shortlinkid, ip) VALUES ($1, $2)';
+  await executeQuery(query, [shortlinkid, ip], 'setFollow');
 }
 
-export async function getAnalytics(shortlinkid: number) {
-  const query = `
-    SELECT createdat, ip FROM public.follow WHERE shortlinkid = '${shortlinkid}';
-  `;
-
-  try {
-    const urls = await pool.query(query);
-    return urls.rows;
-  } catch (error) {
-    console.error('[getAnalytics]: ', error);
-    throw error;
-  }
+export const getAnalytics = async (shortlinkid: number): Promise<Follow[]> => {
+  const query = 'SELECT createdat, ip FROM public.follow WHERE shortlinkid = $1';
+  return executeQuery<Follow>(query, [shortlinkid], 'getAnalytics');
 }

@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
-import { setShortUrl, getOriginalUrl, deleteOriginalUrl, setFollow, getAnalytics } from "./requests";
 import cors from 'cors';
+import { setShortUrl, getOriginalUrl, deleteOriginalUrl, setFollow, getAnalytics } from "./requests";
+import { ShortUrlResponse, ErrorResponse, InfoResponse, DeleteResponse, AnalyticsResponse } from "./config/types";
 
 const app = express();
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -13,107 +14,102 @@ app.use(cors({
 app.set('trust proxy', true);
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("Hello");
-});
-
-app.post("/shorten", async (req: Request, res: Response) => {
+app.post<{}, ShortUrlResponse | ErrorResponse>("/shorten", async (req: Request, res: Response) => {
   const { originalUrl, expiresAt, alias } = req.body;
-  let shortUrl = '';
+  
   try {
-    shortUrl = await setShortUrl(originalUrl, alias, expiresAt);
+    const shortUrl = await setShortUrl(originalUrl, alias, expiresAt);
+    return res.json({ shortUrl });
   } catch (error) {
     console.error('[shorten]: ', error);
+    return res.status(400).json({ error: 'Ошибка при создании короткой ссылки' });
   }
- 
-  res.send({ shortUrl });
 });
 
 app.get("/:code", async (req: Request, res: Response) => {
   const { code } = req.params;
 
-  let original: { id?: number, targeturl: string, expiresat?: Date } = {
-    targeturl: '',
-  };
   try {
-    original = await getOriginalUrl(code);
-  } catch (error) {
-    console.error('[shorten]: ', error);
-  }
-
-  if (original?.expiresat) {
-    const end = new Date(original.expiresat);
-
-    if (end < new Date()) {
-      res.send({ error: new Error('[expiresat]: закончилось действия ссылки') });
-      return null;
+    const original = await getOriginalUrl(code);
+    
+    if (!original?.targeturl) {
+      return res.redirect('http://localhost:4444/not-found');
     }
-  }
 
-  if (original?.targeturl) {
+    if (original.expiresat && new Date(original.expiresat) < new Date()) {
+      return res.status(410).json({ error: 'Срок действия ссылки истек' });
+    }
+
     await setFollow(original.id, req.ip);
-    res.redirect(original.targeturl);
-    return null;
+    return res.redirect(original.targeturl);
+    
+  } catch (error) {
+    console.error('[redirect]: ', error);
+    return res.status(500).json({ error: 'Внутренняя ошибка сервера' });
   }
-
-  res.redirect('http://localhost:4444/not-found');
 });
 
-app.get("/info/:code", async (req: Request, res: Response) => {
+app.get<{}, InfoResponse | ErrorResponse>("/info/:code", async (req: Request, res: Response) => {
   const { code } = req.params;
 
-  let info: { id?: number, targeturl: string, createdAt?: Date, totalFollow: number } = {
-    targeturl: '',
-    totalFollow: 0,
-  };
-
-  let analytics = [];
-
   try {
-    info = await getOriginalUrl(code);
-    analytics = await getAnalytics(info.id);
-    info.totalFollow = analytics.length || 0;
-  } catch (error) {
-    console.error('[shorten]: ', error);
-  }
+    const info = await getOriginalUrl(code);
+    
+    if (!info?.targeturl) {
+      return res.status(404).json({ error: 'Ссылка не найдена' });
+    }
 
-  res.send(JSON.stringify(info));
+    const analytics = await getAnalytics(info.id);
+    
+    return res.json({
+      ...info,
+      totalFollow: analytics.length || 0
+    });
+    
+  } catch (error) {
+    console.error('[info]: ', error);
+    return res.status(500).json({ error: 'Ошибка при получении информации' });
+  }
 });
 
-app.get("/delete/:code", async (req: Request, res: Response) => {
+app.delete<{}, DeleteResponse>("/delete/:code", async (req: Request, res: Response) => {
   const { code } = req.params;
 
   try {
     await deleteOriginalUrl(code);
+    return res.json({ result: 'OK' });
   } catch (error) {
-    console.error('[shorten]: ', error);
-    res.send(JSON.stringify(error));
-    return null;
+    console.error('[delete]: ', error);
+    return res.status(500).json({ 
+      result: 'ERROR',
+      message: 'Ошибка при удалении ссылки'
+    });
   }
-
-  res.send(JSON.stringify({ result: 'OK' }));
 });
 
-app.get("/analytics/:code", async (req: Request, res: Response) => {
-   const { code } = req.params;
+app.get<{}, AnalyticsResponse | ErrorResponse>("/analytics/:code", async (req: Request, res: Response) => {
+  const { code } = req.params;
 
-  let original: { id?: number, targeturl: string, expiresat?: Date } = {
-    targeturl: '',
-  };
-
-  let analytics = [];
-  
   try {
-    original = await getOriginalUrl(code);
-    analytics = await getAnalytics(original.id);
-  } catch (error) {
-    console.error('[shorten]: ', error);
-  }
+    const original = await getOriginalUrl(code);
+    
+    if (!original?.id) {
+      return res.status(404).json({ error: 'Ссылка не найдена' });
+    }
 
-  res.send(JSON.stringify({ totalFollow: analytics.length, analytics }));
+    const analytics = await getAnalytics(original.id);
+    
+    return res.json({
+      totalFollow: analytics.length,
+      analytics
+    });
+    
+  } catch (error) {
+    console.error('[analytics]: ', error);
+    return res.status(500).json({ error: 'Ошибка при получении аналитики' });
+  }
 });
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
-

@@ -15,6 +15,7 @@ export function buildWebpack(options: BuildOptions): webpack.Configuration {
 			path: paths.output,
 			filename: '[name].[fullhash].js',
 			clean: true,
+			publicPath: '/',
 		},
 		plugins: buildPlugins(options),
 		module: {

@@ -45,8 +45,18 @@ export const getInfo = async (code: string): Promise<ShortLink | undefined> => {
 }
 
 export const deleteOriginalUrl = async (code: string): Promise<void> => {
-  const query = 'DELETE FROM public.shortlink WHERE shortpath = $1';
-  await executeQuery(query, [code], 'deleteOriginalUrl');
+  const selectQuery = 'SELECT id FROM public.shortlink WHERE shortpath = $1';
+  const [shortlink] = await executeQuery<{ id: number }>(selectQuery, [code], 'deleteOriginalUrl');
+  
+  if (!shortlink) {
+    throw new Error('Короткая ссылка не найдена');
+  }
+
+  const deleteFollowQuery = 'DELETE FROM public.follow WHERE shortlinkid = $1';
+  await executeQuery(deleteFollowQuery, [shortlink.id], 'deleteOriginalUrl');
+
+  const deleteShortlinkQuery = 'DELETE FROM public.shortlink WHERE shortpath = $1';
+  await executeQuery(deleteShortlinkQuery, [code], 'deleteOriginalUrl');
 }
 
 export const setFollow = async (shortlinkid: number, ip: string): Promise<void> => {

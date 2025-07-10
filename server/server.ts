@@ -62,11 +62,17 @@ app.get("/:code", async (req: Request, res: Response) => {
 app.get("/info/:code", async (req: Request, res: Response) => {
   const { code } = req.params;
 
-  let info: { targeturl: string, createdAt?: Date } = {
+  let info: { id?: number, targeturl: string, createdAt?: Date, totalFollow: number } = {
     targeturl: '',
+    totalFollow: 0,
   };
+
+  let analytics = [];
+
   try {
     info = await getOriginalUrl(code);
+    analytics = await getAnalytics(info.id);
+    info.totalFollow = analytics.length || 0;
   } catch (error) {
     console.error('[shorten]: ', error);
   }

@@ -7,3 +7,5 @@ export function generateCode(length: number = 6): string {
   }
   return result;
 }
+
+export const UNAVAILABLE_ALIAS = ['shorten', 'info', 'delete', 'analytics'];

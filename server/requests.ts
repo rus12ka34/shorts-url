@@ -1,13 +1,20 @@
 import pool from './db';
-import { generateCode } from './helpers';
+import { generateCode, UNAVAILABLE_ALIAS } from './helpers';
 
 export async function setShortUrl(originalUrl: string, alias?: string, expiresAt?: string) {
   const code = generateCode();
   const _alias = alias || code;
+
+  if (UNAVAILABLE_ALIAS.includes(_alias)) {
+    throw new Error('[UNAVAILABLE_ALIAS]');
+  }
   
-  const query = `
+  const query = expiresAt ? `
     INSERT INTO public.shortlink (targeturl, shortpath, expiresat) 
     VALUES ('${originalUrl}', '${_alias}', '${expiresAt}');
+  ` : `
+    INSERT INTO public.shortlink (targeturl, shortpath) 
+    VALUES ('${originalUrl}', '${_alias}');
   `;
 
   try {

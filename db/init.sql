@@ -124,22 +124,6 @@ ALTER TABLE ONLY public.shortlink ALTER COLUMN id SET DEFAULT nextval('public.sh
 --
 
 COPY public.follow (id, shortlinkid, createdat, ip) FROM stdin;
-1	21	2025-07-09 22:53:54.470253	::1
-2	21	2025-07-09 22:59:16.531126	::1
-3	22	2025-07-09 23:17:12.582641	::1
-4	22	2025-07-09 23:17:16.431574	::1
-5	22	2025-07-09 23:17:18.728153	::1
-6	22	2025-07-09 23:17:20.742445	::1
-7	23	2025-07-10 16:41:11.011191	::1
-8	23	2025-07-10 16:41:13.950644	::1
-9	23	2025-07-10 16:41:15.577521	::1
-10	23	2025-07-10 16:41:17.821086	::1
-11	24	2025-07-10 16:58:13.335658	::1
-12	24	2025-07-10 16:58:18.588482	::1
-13	25	2025-07-10 21:33:58.267314	::1
-14	26	2025-07-10 21:40:10.976415	::1
-15	27	2025-07-10 21:42:01.059518	::1
-16	26	2025-07-10 21:42:01.08437	::1
 \.
 
 
@@ -148,30 +132,6 @@ COPY public.follow (id, shortlinkid, createdat, ip) FROM stdin;
 --
 
 COPY public.shortlink (id, targeturl, shortpath, clickcount, createdat, expiresat) FROM stdin;
-1	https://www.google.com/	UKN86b	0	2025-07-07 22:45:28.780414	\N
-2	https://www.google.com/	JbTSt6	0	2025-07-07 22:54:20.546941	\N
-3	https://www.google.com/	jx7JN0	0	2025-07-07 23:02:37.128824	\N
-4	https://www.google.com/	zskNVr	0	2025-07-07 23:07:22.306217	\N
-5	https://www.youtube.com/	bpQMRA	0	2025-07-07 23:07:35.726246	\N
-6	https://www.youtube.com/	qqfaFt	0	2025-07-07 23:08:10.801182	\N
-7	https://www.youtube.com/watch?v=nUO4xCujPzk&ab_channel=AlexeyArestovych	mznLqf	0	2025-07-07 23:08:19.390938	\N
-8	https://chatgpt.com/c/686d17ba-5164-8002-897a-1e701ffb97c2	tZGh06	0	2025-07-08 16:10:23.046109	\N
-9	http://localhost:3000/short/tZGh06	j3ZGRP	0	2025-07-08 16:13:26.391396	\N
-10	https://www.youtube.com/watch?v=j1KTfIta-oI&ab_channel=%D0%97%D1%83%D0%B1%D0%B3%D0%BB%D1%8F%D0%BD%D1%83%D0%BB%D0%B8%D0%BE%D0%B4%D0%BE%D0%B1%D1%80%D0%B8%D0%BB%29	U4Ubq5	0	2025-07-08 16:17:07.584564	\N
-11	https://www.youtube.com/watch?v=Exlc6NmGTqA&ab_channel=%D0%97%D1%83%D0%B1%D0%B0%D1%80%D0%B5%D0%B2.mp4	wBdaot	0	2025-07-08 17:09:17.227181	\N
-12	https://pomodoro-tracker.com/	v0bZAX	0	2025-07-09 18:17:57.902027	2025-07-12 00:00:00+03
-13	https://www.youtube.com/watch?v=nUO4xCujPzk&ab_channel=AlexeyArestovych	mqg2nw	0	2025-07-09 18:25:39.656269	2025-07-08 00:00:00+03
-14	https://www.youtube.com/watch?v=nUO4xCujPzk&ab_channel=AlexeyArestovych	MoaDBg	0	2025-07-09 18:25:50.091849	2025-07-10 00:00:00+03
-15	https://translate.google.com/?sl=en&tl=ru&text=expiresAt&op=translate	transtater	0	2025-07-09 18:32:30.955681	2025-07-10 00:00:00+03
-16	https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/date	2qEthr	0	2025-07-09 18:34:45.401917	2025-07-10 00:00:00+03
-19	https://www.google.com/search?q=%D1%87%D1%82%D0%BE+%D1%82%D0%B0%D0%BA%D0%BE+alias+%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8&oq=%D1%87%D1%82%D0%BE+%D1%82%D0%B0%D0%BA%D0%BE+alias+%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8+&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIJCAEQIRgKGKABMgkIAhAhGAoYoAHSAQg1NzM0ajBqN6gCALACAA&sourceid=chrome&ie=UTF-8	ScGruI	0	2025-07-09 18:42:16.490646	2025-07-12 00:00:00+03
-21	https://chatgpt.com/c/686ebf08-a2f0-8002-a105-dc673b62f28b	ywFjCb	0	2025-07-09 22:53:51.367411	2025-07-12 00:00:00+03
-22	https://pomodoro-tracker.com/	x9okXX	0	2025-07-09 23:17:06.858041	2025-07-12 00:00:00+03
-23	https://pomodoro-tracker.com/	kpundj	0	2025-07-10 16:41:07.723677	2025-07-12 00:00:00+03
-24	http://localhost:4444/	infoiii	0	2025-07-10 16:58:10.498897	\N
-25	https://www.youtube.com/watch?v=EBcSoEQfdD8&ab_channel=ZubarevRewind	2Gyjm1	0	2025-07-10 21:33:55.391854	2025-07-12 00:00:00+03
-26	https://www.youtube.com/watch?v=EBcSoEQfdD8&ab_channel=ZubarevRewind	94d4KA	0	2025-07-10 21:40:08.378539	2025-07-11 00:00:00+03
-27	http://localhost:3000/94d4KA	Aud7pT	0	2025-07-10 21:41:58.724475	\N
 \.
 
 
@@ -179,14 +139,14 @@ COPY public.shortlink (id, targeturl, shortpath, clickcount, createdat, expiresa
 -- Name: follow_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.follow_id_seq', 16, true);
+SELECT pg_catalog.setval('public.follow_id_seq', 30, true);
 
 
 --
 -- Name: shortlink_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.shortlink_id_seq', 27, true);
+SELECT pg_catalog.setval('public.shortlink_id_seq', 42, true);
 
 
 --
